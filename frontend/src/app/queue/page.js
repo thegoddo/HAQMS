@@ -15,11 +15,12 @@ export default function QueueMonitor() {
   // HARDCODED API BASE URL: Duplicated from AuthContext (code duplication smell)
   const API_BASE_URL = 'http://localhost:5000/api';
 
-  const fetchQueueData = async () => {
+  // modified fetch function with error handling, abort support and loading state management
+  const fetchQueueData = async ({ signal } = {}) => {
     try {
-      // Insecure: Fetches queue without checking credentials (it's a public dashboard, which is fine, 
+      // Insecure: Fetches queue without checking credentials (it's a public dashboard, which is fine,
       // but it uses the hardcoded API domain)
-      const res = await fetch(`${API_BASE_URL}/queue`);
+      const res = await fetch(`${API_BASE_URL}/queue`, { signal });
       if (!res.ok) {
         throw new Error('Failed to retrieve active token queue.');
       }
@@ -27,6 +28,7 @@ export default function QueueMonitor() {
       setTokens(data);
       setError('');
     } catch (err) {
+      if (err.name === 'AbortError') return; // fetch was aborted on unmount/cleanup
       console.error('Queue poll fetch error:', err);
       setError(err.message);
     } finally {
@@ -35,8 +37,9 @@ export default function QueueMonitor() {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
     // Initial fetch
-    fetchQueueData();
+    fetchQueueData({signal: controller.signal});
 
     // MEMORY LEAK BUG:
     // This setInterval has NO cleanup function (does not return clearInterval).
@@ -45,10 +48,17 @@ export default function QueueMonitor() {
     // dozens of parallel intervals will poll the database, causing memory bloat,
     // state update crashes on unmounted components, and heavy server load.
     const intervalId = setInterval(() => {
-      console.log(`[POLL] Active Queue Poll #${refreshCount + 1} firing...`);
-      fetchQueueData();
-      setRefreshCount((prev) => prev + 1);
+      setRefreshCount((prev) => {
+        const next = prev + 1;
+        console.log(`[POLL] Active Queue Poll #${next} firing...`);
+        return next;
+      });
+      fetchQueueData({signal: controller.signal});
     }, 3000);
+    return () => {
+      clearInterval(intervalId);
+      controller.abort();
+    }
 
     // Junior Developer Note: "Interval created, will run forever to keep dashboard fully synced!"
     // Missing: return () => clearInterval(intervalId);
