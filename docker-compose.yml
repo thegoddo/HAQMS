@@ -1,4 +1,5 @@
-version: '3.8'
+# ISSE 1: version 3.8 is not supported by all Docker Compose versions. You can use version 3 or omit the version field to ensure compatibility.
+# version: '3.8'
 
 services:
   postgres:
