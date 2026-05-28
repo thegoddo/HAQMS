@@ -1,0 +1,25 @@
+# .github/workflows/db-migrate-seed.yml
+name: Migrate & Seed DB
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate-and-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2 # optional, or use setup-node
+        with:
+          version: 18
+      - name: Install deps
+        run: npm ci
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+      - name: Run migrations (deploy)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
+      - name: Run seed (one-off)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node prisma/seed.js
