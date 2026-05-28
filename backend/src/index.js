@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 let corsOptions = {
-  origin: ["http://localhost:3000", "https://haqms-frontend.vercel.app"],
+  origin: ["http://localhost:3000", "https://haqms-eta.vercel.app"],
 };
 
 app.use(cors(corsOptions));
