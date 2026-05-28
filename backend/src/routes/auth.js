@@ -2,12 +2,20 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
-const {authenticate} = require("../middleware/auth.js")
+const { authenticate } = require("../middleware/auth.js");
 
 const router = express.Router();
 const prisma = new PrismaClient();
 const JWT_SECRET =
   process.env.JWT_SECRET || "my-super-secret-secret-key-12345!!!";
+
+const formatResponse = (res, statusCode, success, message, data = {}) => {
+  return res.status(statusCode).json({
+    success,
+    message,
+    data,
+  });
+};
 
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
