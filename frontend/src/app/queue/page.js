@@ -18,8 +18,6 @@ export default function QueueMonitor() {
   // modified fetch function with error handling, abort support and loading state management
   const fetchQueueData = async ({ signal } = {}) => {
     try {
-      // Insecure: Fetches queue without checking credentials (it's a public dashboard, which is fine,
-      // but it uses the hardcoded API domain)
       const res = await fetch(`${API_BASE_URL}/queue`, { signal });
       if (!res.ok) {
         throw new Error("Failed to retrieve active token queue.");
