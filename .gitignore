@@ -4,3 +4,8 @@ backend/node_modules
 backend/prisma/migrations
 setup.sh
 backend/.env
+setup.sh
+setup.sh
+backend/package-lock.json
+package-lock.json
+frontend/package-lock.json
