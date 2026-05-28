@@ -8,3 +8,5 @@ setup.sh
 backend/package-lock.json
 package-lock.json
 frontend/package-lock.json
+bug_report.md
+bug_report.doc
