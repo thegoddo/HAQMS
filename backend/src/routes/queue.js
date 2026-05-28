@@ -6,8 +6,8 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // GET /api/queue
-// List all active queue tokens
-router.get("/", authenticate, async (req, res) => {
+// List all active queue tokens for the public monitor board
+router.get("/", async (req, res) => {
   try {
     const { doctorId, status } = req.query;
 
