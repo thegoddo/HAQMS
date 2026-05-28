@@ -33,6 +33,8 @@ export default function Dashboard() {
   const [patientsLoading, setPatientsLoading] = useState(false);
   const [patientSearch, setPatientSearch] = useState('');
   const [patientGender, setPatientGender] = useState('All');
+  // Debounced search value to avoid firing fetch on every keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState(patientSearch);
   const [patientsPagination, setPatientsPagination] = useState({ page: 1, totalPages: 1 });
   
   // Registration Form
@@ -76,7 +78,7 @@ export default function Dashboard() {
     setPatientsLoading(true);
     try {
       // Inefficient memory pagination called from client
-      const res = await fetch(`${API_BASE_URL}/patients?page=${page}&limit=5&search=${patientSearch}&gender=${patientGender}`, {
+      const res = await fetch(`${API_BASE_URL}/patients?page=${page}&limit=5&search=${encodeURIComponent(debouncedSearch)}&gender=${patientGender}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -96,11 +98,17 @@ export default function Dashboard() {
   };
 
   // Trigger Patient List Fetch (Every keystroke trigger re-renders parent! - Performance bug)
+  // Debounce patientSearch to avoid fetch on every keypress
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(patientSearch), 300);
+    return () => clearTimeout(id);
+  }, [patientSearch]);
+
   useEffect(() => {
     if (user.role === 'RECEPTIONIST' || user.role === 'ADMIN') {
       fetchPatients(1);
     }
-  }, [patientSearch, patientGender]);
+  }, [debouncedSearch, patientGender]);
 
   // Fetch Doctors for booking drop-down
   const fetchDoctorsDropdown = async () => {
@@ -894,7 +902,7 @@ export default function Dashboard() {
                       without optional chaining! If medicalHistory is null (which is the case for Batman, Clark Kent, etc.),
                       this code throws: "Cannot read properties of null (reading 'toUpperCase')" and crashes the app! */}
                   <p className="text-slate-700 dark:text-slate-300 leading-5 text-sm font-semibold">
-                    {selectedPatientHistory.medicalHistory.toUpperCase()}
+                    {selectedPatientHistory.medicalHistory?.toUpperCase() ?? 'No medical history recorded.'}
                   </p>
                 </div>
 
