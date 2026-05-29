@@ -20,8 +20,12 @@ let corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://haqms-eta.vercel.app",
-    "https://haqms-git-main-biswajit-shaws-projects.vercel.app/",
+    "https://haqms-git-main-biswajit-shaws-projects.vercel.app",
   ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"], // Explicitly allow Cookie header tracking
+  credentials: true, // Mandates the generation of Access-Control-Allow-Credentials: true
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -34,6 +38,8 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
+
+app.options("*", cors(corsOptions)); // Handle preflight requests for all routes
 
 // Register routes
 app.use("/api/auth", authRoutes);
