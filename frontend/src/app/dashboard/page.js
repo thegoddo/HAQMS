@@ -691,7 +691,7 @@ export default function Dashboard() {
                       required
                       value={regPhone}
                       onChange={(e) => setRegPhone(e.target.value)}
-                      placeholder="555-0199 (Unchecked format)"
+                      placeholder="555-0199"
                       className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
                     />
                   </div>
@@ -846,9 +846,6 @@ export default function Dashboard() {
                   <strong>Token Generation Engine Note:</strong> Direct arrivals
                   bypass appointments. The token engine automatically fetches
                   the current days maximum token size and increments.
-                  <span className="block mt-1 font-bold text-rose-500 uppercase tracking-wide">
-                    Warning: Vulnerable to check-in race conditions!
-                  </span>
                 </div>
 
                 <div className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -1033,10 +1030,6 @@ export default function Dashboard() {
                     Clinical Background Information
                   </h4>
 
-                  {/* FRONTEND CRASH BUG:
-                      Assuming medicalHistory is always populated. Accesses a method on a nullable property
-                      without optional chaining! If medicalHistory is null (which is the case for Batman, Clark Kent, etc.),
-                      this code throws: "Cannot read properties of null (reading 'toUpperCase')" and crashes the app! */}
                   <p className="text-slate-700 dark:text-slate-300 leading-5 text-sm font-semibold">
                     {selectedPatientHistory.medicalHistory?.toUpperCase() ??
                       "No medical history recorded."}
@@ -1197,9 +1190,7 @@ export default function Dashboard() {
                       <span className="font-bold text-amber-500">
                         {adminReportData.timeTakenMs} ms
                       </span>
-                      . Sequential nested database calls loops reduce
-                      throughput. Optimization using Promise.all or single join
-                      aggregate is required.
+                      .
                     </div>
                   </div>
 
@@ -1301,7 +1292,6 @@ export default function Dashboard() {
                 backend query.
               </p>
             </div>
-
             <div className="flex gap-4">
               <div className="relative flex-1 rounded-lg shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -1323,20 +1313,11 @@ export default function Dashboard() {
                 Execute SQL Query
               </button>
             </div>
-
-            <div className="p-3 bg-rose-500/10 text-rose-500 text-xs rounded-lg border border-rose-500/20 font-semibold leading-5 flex gap-3">
+            /
+            {/*<div className="p-3 bg-rose-500/10 text-rose-500 text-xs rounded-lg border border-rose-500/20 font-semibold leading-5 flex gap-3">
               <ShieldAlert className="h-5 w-5 shrink-0" />
-              <div>
-                <strong>SQL Vulnerability alert:</strong> This search executes
-                raw interpolation:
-                <code className="block bg-black/10 dark:bg-black/30 p-1.5 rounded mt-1 font-mono">
-                  SELECT * FROM &quot;Doctor&quot; WHERE name ILIKE
-                  &apos;%&#123;query&#125;%&apos;
-                </code>
-                Can be audited by inputting standard SQL injection strings to
-                leak full user login lists.
-              </div>
-            </div>
+              <div></div>
+            </div> /*}
 
             {/* Doctors Result List */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
